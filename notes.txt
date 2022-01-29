@@ -1,0 +1,95 @@
+# Create a Virtual Environment in Python
+python -m venv <name>
+
+ - Make sure to change interpreter to that in the virtual environment
+ - Activate by running the 'activate.bat' file in the venv\Scripts folder
+ - Deactivate with "deactivate" line in cmd line when done
+
+When you wish to reference another folder as a package, that folder needs to contain a "__init__.py"
+file.
+
+# Install Flask
+pip install flask
+
+ Enviromental Variables
+ - in the command line set: set FLASK_APP=run.py
+ - in the command line set: set FLASK_ENV=development
+
+ - then: "flask run" to initiate local hosting
+
+# Install FastAPI with all optional dependencies
+pip install fastapi[all]
+
+# Save all python libraries into a requirements.txt in the VirtEnv
+pip freeze > requirements.txt
+
+# Deploy instance of FastAPI (where the instance is named "app" in the "main.py" file)
+uvicorn main:app --reload   OR   uvicorn app.main:app (if the main.py file is in folder 'app')
+
+ - 'reload' flag automatically monitors and reinitiates server upon code changes
+
+
+ One of the benefits of FastAPI is that it handles much of the documentation of the API
+   automatically, using SwaggerAI to display all of the hardcoded path operations
+
+
+#%#%# Database Migration #%#%#%#
+Database migration is the process of updating and, potentially, rolling back database systems as the database
+architecture evolves during use and growth of our programs.  It is like the GIT of code management, but for dbs.
+
+The Python 'alembic' library is the tool that we will use for this process.  SQLAlchemy is limited in that it
+can autogenerate new tables when the Base model is updated with a new table, but the functionality will not
+update the database with new columns added or deleted from tables; this is the power of Alembic and the 
+'autogenerate' revision functionality.
+
+# To initialize an alembic systems
+pip install alembic
+alembic init [directory name - e.g., alembic]
+
+# To track and make revisions
+alembic revision -m "Create standard tables"
+# This creates a 'versions' folder within the alembic directory and a version-identified py file for documenting
+#   the functions that need to be run to 'upgrade' (rollout) or 'downgrade' (rollback) the version changes.
+#   See Alembic DDL documentation for more commands
+
+# To upgrade
+alembic upgrade [revision identifier - from 'versions' folder] OR (to upgrade to the current revision)
+alembic upgrade head
+
+# To downgrade
+alembic downgrade -1 [to roll back one revision]
+alembic downgrade [identifier] (to downgrade to this revision)
+
+# Autopopulate changes from the sqlalchemy model to the revision
+alembic revision --autogenerate -m "generate model changes"
+
+#%#%# SQL Commands: #%#%#%#
+SELECT name AS product_name, id as product_id, inventory from products      # Show three rows from table 'products'
+    ORDER BY inventory DESC, price ASC          # Sort by inventory value descending then price ascending
+    WHERE name LIKE '%en'                       # Finding all name that have 'en' somehwere in the name
+    LIMIT 20
+    OFFSET 5                                    # Skip the first 5 rows
+
+SELECT title, content, email FROM posts LEFT JOIN users ON posts.owner_id = users.id;
+   - Query from multiple tables
+
+SELECT posts.*, COUNT(votes.post_id) as votes FROM posts LEFT JOIN votes ON posts.id = votes.post_id where posts.id = 3 GROUP BY posts.id;
+   - Query a vote count from multiple tables
+
+INSERT INTO products (name, price, inventory) VALUES ('baseball', 4, 50);
+   - A return of 'INSERT 0 1' means we successfully inserted 1 row
+
+INSERT INTO products (name, price, inventory) VALUES ('baseball', 4, 50), ('laptop', 100, 10), ('monitor', 100, 15)
+    RETURNING name, id, inventory;
+   - Add multiple entries to a database and return the added entries with the listed column names
+
+DELETE FROM products WHERE id = 10;
+
+UPDATE products SET name = 'Red Socks', price = 5 WHERE id = 3;
+
+## ENVIRONMENT VARIABLES ##
+To edit environment variables, access the Control Panel Environment Variables via the the search bar
+Add a User-specific variable to the upper of the two menus, and to access the variable, simply use:
+
+import os
+path = os.getenv("PATH")
