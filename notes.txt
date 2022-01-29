@@ -1,3 +1,16 @@
+
+#%#%# GIT Commands: #%#%#%#
+
+After a local repository has already been established, run the following to add to GITHIB:
+
+[from local directory]
+git init
+- OPTIONAL: git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://github.com/[GIT User]/[repository name].git
+git push -u origin main
+
 # Create a Virtual Environment in Python
 python -m venv <name>
 
@@ -62,6 +75,25 @@ alembic downgrade [identifier] (to downgrade to this revision)
 
 # Autopopulate changes from the sqlalchemy model to the revision
 alembic revision --autogenerate -m "generate model changes"
+
+#%#%# Cross Origin Resource Sharing (CORS): #%#%#%#
+Allows requests from a web browser on one domain to a server on a different domain - by default, an API will
+only allow web browsers running on the same domain (e.g., localhost) to make requests.
+
+Use the following to specify acceptable domains for API requests:
+
+from fastapi.middleware.cors import CORSMiddleware
+# Specify the domains from which the api is allowed to accept requests
+origins = ['https://www.google.com']
+
+# Middleware is a function that a request is passed through prior to any routers
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],)
+
 
 #%#%# SQL Commands: #%#%#%#
 SELECT name AS product_name, id as product_id, inventory from products      # Show three rows from table 'products'
