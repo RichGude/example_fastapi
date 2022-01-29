@@ -15,7 +15,7 @@ from .database import engine
 app = FastAPI()
 
 # Specify the domains from which the api is allowed to accept requests
-origins = ['https://www.google.com']
+origins = ['*']
 
 # Middleware is a function that a request is passed through prior to any routers
 app.add_middleware(

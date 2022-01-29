@@ -11,6 +11,9 @@ git branch -M main
 git remote add origin https://github.com/[GIT User]/[repository name].git
 git push -u origin main
 
+# To remove some files added for commit
+git restore --staged [path/to/file(s)]
+
 # Create a Virtual Environment in Python
 python -m venv <name>
 
