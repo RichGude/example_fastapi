@@ -1,15 +1,20 @@
 name: Build and Deploy Code
-
 on: [push, pull_request]
+  # potential way to separate when to run
+  # push:
+  #   branches: ["main"]
+  # pull_request:
+  #   branches:
+  #     - "test_branch"
 
-  jobs:
-    job1:
-      runs-on: ubuntu-latest
-      steps:
-        # Description of action
-        - name: Pulling Git Repo
-        # Because code is already on Github, some additional details, like repo, can be foregone
-          uses: actions/checkout@v2
-        - name: Confirm Pull
-          run: echo "Pull Request successful"
+jobs:
+  job1:
+    runs-on: ubuntu-latest
+    steps:
+      # Description of action
+      - name: Pulling Git Repo
+      # Because code is already on Github, some additional details, like repo, can be foregone
+        uses: actions/checkout@v2
+      - name: Confirm Pull
+        run: echo "Pull Request successful"
 
