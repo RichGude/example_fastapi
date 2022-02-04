@@ -9,12 +9,53 @@ on: [push, pull_request]
 
 jobs:
   job1:
+    # On Github, set up an environment and special environment secrets
+    environment:
+      name: testing
+    env:    # Reference environment secrets with ${{ XXX }} values
+      DATABASE_HOSTNAME: ${{ secrets.DATABASE_HOSTNAME }}
+      DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
+      DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+      DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
+      DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      ALGORITHM: ${{ secrets.ALGORITHM }}
+      ACCESS_TOKEN_EXPIRE_MINUTES: ${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}
+
+    services:
+      # Label used to access the service container
+      postgres:
+        # Docker Hub image
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+          POSTGRES_DB: ${{secrets.DATABASE_NAME}}_test
+        ports:
+          - ${{secrets.DATABASE_PORT}}:${{secrets.DATABASE_PORT}}
+        # Use options to confirm DB is running before running other steps
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     runs-on: ubuntu-latest
     steps:
       # Description of action
       - name: Pulling Git Repo
       # Because code is already on Github, some additional details, like repo, can be foregone
         uses: actions/checkout@v2
-      - name: Confirm Pull
-        run: echo "Pull Request successful"
+      - name: Install Python
+        uses: actions/setup-python@v2
+        with:
+          - python-version: "3.9"
+      - name: Upgrade Pip
+        run: python -m pip install --upgrade pip
+      - name: Install Dependencies
+        run: pip install -r requirements.txt
+      - name: Test with Pytest
+        run: |
+          pip install pytest
+          pytest
+
 
