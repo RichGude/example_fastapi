@@ -1,11 +1,5 @@
 name: Build and Deploy Code
 on: [push, pull_request]
-  # potential way to separate when to run
-  # push:
-  #   branches: ["main"]
-  # pull_request:
-  #   branches:
-  #     - "test_branch"
   jobs:
     job1:
       runs-on: ubuntu-latest
