@@ -36,4 +36,4 @@ app.include_router(vote.router)
 @app.get("/")                   # Submit a get request at the localhost root path
 async def root():
     # FastAPI automatically converts return values to JSON
-    return {"message": "Hello World"}
+    return {"message": "It is finished"}

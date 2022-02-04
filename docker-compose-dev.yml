@@ -1,0 +1,51 @@
+version: "3"
+# services are just docker containers
+services:
+  # For the application (fastapi) 
+  api:
+    # Build an image from a local DockerFile from the current directory (.) with 'build'
+    build: .
+
+    # The postgres container needs to start before the api, in order to ensure proper database setup
+    depends_on:
+      - postgres
+
+    # Where an outside entity outside the container can engage with the container
+    #     <port on local host>:<port on container>
+    #
+    #  Since the RUN command sends to port 8000, the second value will be 8000
+    #  To access the container from (e.g.) localhost:4000, the first value will be 4000
+    ports: [4000:8000]
+
+    # Specify a bind-mount volume for allowing dynamic updating of code while dev deployed
+    #   <directory in local - "./" being the home directory>:<directory in container - "/user/src/app/[etc]>"
+    volumes:
+      - ./:/usr/src/app:ro
+    
+    # env_file: [./.env] or
+    # identifying 'postgres' as the hostname will default to finding the name of the service below
+    environment:
+      - DATABASE_HOSTNAME=postgres
+      - DATABASE_PORT=5432
+      - DATABASE_PASSWORD=standard
+      - DATABASE_NAME=fastapi
+      - DATABASE_USERNAME=postgres
+      - SECRET_KEY=0925794fa6ca2556c84667a9563b93709f60fcca6cf63b888d3e7
+      - ALGORITHM=HS256
+      - ACCESS_TOKEN_EXPIRE_MINUTES=120
+
+  # Add a postgress database service
+  postgres:
+    image: postgres
+    environment:
+      # From the documenetation in the official postgres docker image:
+      - POSTGRES_PASSWORD=standard
+      - POSTGRES_DB=fastapi
+    # Use a named volume to keep data stored after the container is brought down
+    volumes:
+      # Name of volume and path to store in container
+      - postgres-db:/var/lib/postgresql/data
+
+# Save all local named volumes above into a global named volume
+volumes:
+  postgres-db:

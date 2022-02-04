@@ -14,6 +14,23 @@ git push -u origin main
 # To remove some files added for commit
 git restore --staged [path/to/file(s)]
 
+#%#%# HEROKU Commands: #%#%#%#
+
+Heroku is a web-based application for hosting programs, such as fastapi and flask applications.
+Install Heroku via a downloaded .exe file from their host site
+In the command line:
+- heroku login [follow prompts for logging in]
+- heroku create [app name - must be unique to all others on heroku; doesn't have to match folder name]
+- git push heroku main [uploads app to site]
+- heroku addons:create heroku-postgresql:hobby-dev [builds a heroku-based postgres database]
+Create a 'Procfile' in the app directory (tells the heroku app how to run the code), with the following:
+- web: uvicorn app.main:app --host=0.0.0.0 --port=${PORT:-5000}
+If changes are made to the application after deployment, restart the Heroku instance with:
+- heroku ps:restart
+
+In order to upgrade the server on heroku with the alembic mounted revisions:
+heroku run "alembic upgrade head"
+
 # Create a Virtual Environment in Python
 python -m venv <name>
 
@@ -97,6 +114,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],)
 
+#%#%# Database Migration #%#%#%#
+When running a "docker-compose.yml" file in dev and production environments, use:
+docker-compose -f docker-compose-dev.yml up -d
 
 #%#%# SQL Commands: #%#%#%#
 SELECT name AS product_name, id as product_id, inventory from products      # Show three rows from table 'products'
@@ -128,3 +148,13 @@ Add a User-specific variable to the upper of the two menus, and to access the va
 
 import os
 path = os.getenv("PATH")
+
+#%#%# Automated Testing: #%#%#%#
+Download the pytest library via
+- pip install pytest
+
+#%#%# Continuous Integration and Continuous Deployment #%#%#%#
+The process of automating the process of pulling source code, install dependencies, run automated 
+tests, build images (CI), grab images/code, and update production (CD).
+
+Software for reunning CI/CD: **Github Actions** is the easiest to utilize

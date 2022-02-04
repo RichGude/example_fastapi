@@ -1,0 +1,50 @@
+version: "3"
+# services are just docker containers
+services:
+  # For the application (fastapi) 
+  api:
+    # In production, it is better to generate an image of the dev module, and pull the image in prod
+    # image: richgude/taxiapp
+    build: .
+
+    # The postgres container needs to start before the api, in order to ensure proper database setup
+    depends_on:
+      - postgres
+
+    # Where an outside entity outside the container can engage with the container
+    #     <port on local host>:<port on container>
+    #
+    #  Since the RUN command sends to port 8000, the second value will be 8000
+    #  To access the container from (e.g.) localhost:4000, the first value will be 4000
+    ports: [80:8000]
+
+    # Overwrite the Dockerfile command dev shell with the production shell file
+    command: /start_prod.sh
+    
+    # env_file: [./.env] or
+    # identifying 'postgres' as the hostname will default to finding the name of the service below
+    environment:
+      - DATABASE_HOSTNAME=${DATABASE_HOSTNAME}
+      - DATABASE_PORT=${DATABASE_PORT}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+      - DATABASE_NAME=${DATABASE_NAME}
+      - DATABASE_USERNAME=${DATABASE_USERNAME}
+      - SECRET_KEY=${SECRET_KEY}
+      - ALGORITHM=${ALGORITHM}
+      - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES}
+
+  # Add a postgress database service
+  postgres:
+    image: postgres
+    environment:
+      # From the documenetation in the official postgres docker image:
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+      - POSTGRES_DB=${DATABASE_NAME}
+    # Use a named volume to keep data stored after the container is brought down
+    volumes:
+      # Name of volume and path to store in container
+      - postgres-db:/var/lib/postgresql/data
+
+# Save all local named volumes above into a global named volume
+volumes:
+  postgres-db:
